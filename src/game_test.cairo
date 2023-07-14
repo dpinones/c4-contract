@@ -1,4 +1,4 @@
-use c4_stark::game::GameTrait;
+use c4_stark::game::{GameTrait, check_horizontal};
 use traits::{TryInto, Into};
 
 use result::{Result, ResultTrait};
@@ -38,4 +38,18 @@ fn test_game_drop_disc_column_full() {
 fn test_game_drop_disc_invalid_column() {
     let mut game = GameTrait::new();
     game.drop_disc(8);
+}
+
+#[test]
+#[available_gas(3000000)]
+fn test_game_check_horizontal() {
+    let mut game = GameTrait::new();
+
+    game.drop_disc(3);
+    game.drop_disc(5);
+    game.drop_disc(2);
+    game.drop_disc(5);
+    game.drop_disc(1);
+    game.drop_disc(5);
+    game.drop_disc(0);
 }
