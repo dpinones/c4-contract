@@ -1,4 +1,4 @@
-use c4_stark::entities::{Game, Turn};
+use c4_stark::contract::storage::{Game, Turn};
 
 #[starknet::interface]
 trait IFourConnectOnline<T> {
@@ -8,6 +8,7 @@ trait IFourConnectOnline<T> {
     fn join_game(ref self: T, game_id: u128);
     #[external]
     fn finish_game(ref self: T, game_id: u128);
+    // fn finish_game(ref self: T, game_id: u128, turns: Array<Turn>);
     #[view]
     fn get_game(self: @T, game_id: u128) -> Game;
 }
@@ -18,7 +19,8 @@ mod FourConnectOnline {
     use starknet::{
         ContractAddress, ClassHash, get_caller_address, get_contract_address, replace_class_syscall
     };
-    use c4_stark::entities::{Game, Turn};
+    use c4_stark::contract::storage::{Game, Turn};
+    use c4_stark::game::solver::{Solver, SolverTrait};
 
     #[storage]
     struct Storage {
@@ -27,6 +29,17 @@ mod FourConnectOnline {
         _count_games: u128,
         _games: LegacyMap<u128, Game>,
         _balances: LegacyMap<ContractAddress, u256>
+    }
+
+    #[event]
+    #[derive(Drop, starknet::Event)]
+    enum Event {
+        Finish: Finish,
+    }
+
+    #[derive(Drop, starknet::Event)]
+    struct Finish {
+        winner: ContractAddress,
     }
 
     #[constructor]
@@ -68,7 +81,28 @@ mod FourConnectOnline {
         }
 
         fn finish_game(ref self: ContractState, game_id: u128) {
-            
+        // fn finish_game(ref self: ContractState, game_id: u128, turns: Array<Turn>) {
+            let mut game = SolverTrait::new();
+            let game = self._games.read(game_id);
+            let winner = game.player_1;
+            // let winner = solver.execute(turns);
+            self._games.write(
+                self._count_games.read(),
+                Game {
+                    winner,
+                    player_1: game.player_1,
+                    player_2: game.player_2,
+                }
+            );
+
+            self
+            .emit(
+                Event::Finish(
+                    Finish{
+                        winner
+                    }
+                )
+            );
         }
 
         fn get_game(self: @ContractState, game_id: u128) -> Game {

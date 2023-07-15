@@ -11,6 +11,6 @@ struct Game {
 
 #[derive(Copy, Drop, Serde)]
 struct Turn {
-    x: u128,
-    y: u128,
+    player: ContractAddress,
+    col: u8,
 }
