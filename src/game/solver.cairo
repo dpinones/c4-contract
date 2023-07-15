@@ -8,13 +8,14 @@ const ROWS: u8 = 6;
 const COLS: u8 = 7;
 
 use debug::PrintTrait;
-use c4_stark::game::entities::{Cell, IntoU8CellImpl, IntoCellU8Impl, 
-Player, IntoU8PlayerImpl, IntoPlayerU8Impl, PrintPlayer};
+use c4_stark::game::entities::{
+    Cell, IntoU8CellImpl, IntoCellU8Impl, Player, IntoU8PlayerImpl, IntoPlayerU8Impl, PrintPlayer
+};
 use c4_stark::contract::storage::{Turn};
 
 #[derive(Destruct)]
 struct Solver {
-    board: Felt252Dict<u8>, 
+    board: Felt252Dict<u8>,
     current_player: Player,
 }
 
@@ -25,15 +26,10 @@ trait SolverTrait {
 
 impl SolverTraitImpl of SolverTrait {
     fn new() -> Solver {
-        Solver { 
-            board: Default::default(),
-            current_player: Player::Player1(()),   
-        }
+        Solver { board: Default::default(), current_player: Player::Player1(()),  }
     }
 
-    fn execute(ref self: Solver, turns: Array<Turn>) {
-        
-    }
+    fn execute(ref self: Solver, turns: Array<Turn>) {}
 }
 
 fn drop_disc(ref self: Solver, col: u8) {
@@ -48,7 +44,6 @@ fn drop_disc(ref self: Solver, col: u8) {
         let position: felt252 = position_to_felt(row_index, col).into();
         let cell = self.board.get(position);
         if cell == Cell::Empty(()).into() {
-            
             // self.current_player.print();
 
             self.board.insert(position, self.current_player.into());
@@ -67,8 +62,8 @@ fn drop_disc(ref self: Solver, col: u8) {
     // y -> row_index
     // x -> col
     // if @self.current_player == @Player::Player1(()) {
-        check_winner(ref self, col, row_index);
-    // }
+    check_winner(ref self, col, row_index);
+// }
 }
 
 fn check_winner(ref self: Solver, last_move_x: u8, last_move_y: u8) -> Option<Player> {
@@ -125,7 +120,7 @@ fn _check_horizontal(ref self: Solver, row: u8, col: u8) -> bool {
             break false;
         }
         idx += 1;
-        // '---'.print();
+    // '---'.print();
     }
 }
 

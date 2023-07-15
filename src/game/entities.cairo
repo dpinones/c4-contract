@@ -68,4 +68,3 @@ impl PrintPlayer of PrintTrait<Player> {
     }
 }
 
-

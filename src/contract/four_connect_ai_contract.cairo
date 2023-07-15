@@ -1,5 +1,5 @@
 struct Game {
-    id: u128,
+    id: u128, 
 }
 
 struct Turn {
@@ -33,13 +33,9 @@ mod FourConnectAi {
 
     #[external(v0)]
     impl FourConnectAi of super::IFourConnectAi<ContractState> {
-        fn create_game(ref self: ContractState) {
-            
-        }
+        fn create_game(ref self: ContractState) {}
 
-        fn finish_game(ref self: ContractState, game_id: u128) {
-            
-        }
+        fn finish_game(ref self: ContractState, game_id: u128) {}
 
         fn get_game(self: @ContractState, game_id: u128) -> u128 {
             1

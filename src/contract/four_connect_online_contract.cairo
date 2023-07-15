@@ -34,12 +34,12 @@ mod FourConnectOnline {
     #[event]
     #[derive(Drop, starknet::Event)]
     enum Event {
-        Finish: Finish,
+        Finish: Finish, 
     }
 
     #[derive(Drop, starknet::Event)]
     struct Finish {
-        winner: ContractAddress,
+        winner: ContractAddress, 
     }
 
     #[constructor]
@@ -52,57 +52,50 @@ mod FourConnectOnline {
     #[external(v0)]
     impl FourConnectOnline of super::IFourConnectOnline<ContractState> {
         fn create_game(ref self: ContractState) {
-
             let player_address = get_caller_address();
-            self._games.write(
-                self._count_games.read(),
-                Game {
-                    winner: starknet::contract_address_const::<0>(),
-                    player_1: player_address,
-                    player_2: starknet::contract_address_const::<0>(),
-                }
-            );
+            self
+                ._games
+                .write(
+                    self._count_games.read(),
+                    Game {
+                        winner: starknet::contract_address_const::<0>(),
+                        player_1: player_address,
+                        player_2: starknet::contract_address_const::<0>(),
+                    }
+                );
 
             self._count_games.write(self._count_games.read() + 1);
         }
 
         fn join_game(ref self: ContractState, game_id: u128) {
-            
             let game = self._games.read(game_id);
             let player_address = get_caller_address();
-            self._games.write(
-                game_id,
-                Game {
-                    winner: starknet::contract_address_const::<0>(),
-                    player_1: game.player_1,
-                    player_2: player_address,
-                }
-            );
+            self
+                ._games
+                .write(
+                    game_id,
+                    Game {
+                        winner: starknet::contract_address_const::<0>(),
+                        player_1: game.player_1,
+                        player_2: player_address,
+                    }
+                );
         }
 
         fn finish_game(ref self: ContractState, game_id: u128) {
-        // fn finish_game(ref self: ContractState, game_id: u128, turns: Array<Turn>) {
+            // fn finish_game(ref self: ContractState, game_id: u128, turns: Array<Turn>) {
             let mut game = SolverTrait::new();
             let game = self._games.read(game_id);
             let winner = game.player_1;
             // let winner = solver.execute(turns);
-            self._games.write(
-                self._count_games.read(),
-                Game {
-                    winner,
-                    player_1: game.player_1,
-                    player_2: game.player_2,
-                }
-            );
-
             self
-            .emit(
-                Event::Finish(
-                    Finish{
-                        winner
-                    }
-                )
-            );
+                ._games
+                .write(
+                    self._count_games.read(),
+                    Game { winner, player_1: game.player_1, player_2: game.player_2,  }
+                );
+
+            self.emit(Event::Finish(Finish { winner }));
         }
 
         fn get_game(self: @ContractState, game_id: u128) -> Game {
